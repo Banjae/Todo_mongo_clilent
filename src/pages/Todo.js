@@ -36,22 +36,32 @@ const Todo = () => {
           setTodoData(res.data.initTodo);
         }
       })
-      .catch((error) => {
-        console.log(error);
+      .catch((err) => {
+        console.log(err);
       });
     // 초기데이터를 컴포넌트가 마운트 될때 한번 실행
   }, []);
 
   const deleteClick = useCallback(
     (id) => {
-      // 클릭된 id와 다른 요소들만 걸러서 새로운 배열 생성
-      const nowTodo = todoData.filter((item) => item.id !== id);
-      // console.log("Click", nowTodo);
-      // 목록을 갱신한다
-      // axios 이용해서 MongoDB 삭제 진행
-      setTodoData(nowTodo);
+      if (window.confirm("정말 삭제하시겠습니까?")) {
+        let body = {
+          id: id,
+        };
+        axios
+          .post("/api/post/delete", body)
+          .then((res) => {
+            console.log(res);
+            // 클릭된 id와 다른 요소들만 걸러서 새로운 배열 생성
+            const nowTodo = todoData.filter((item) => item.id !== id);
+            setTodoData(nowTodo);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
       // 로컬에 저장한다 (DB 예정)
-      localStorage.setItem("todoData", JSON.stringify(nowTodo));
+      // localStorage.setItem("todoData", JSON.stringify(nowTodo));
     },
     [todoData]
   );
@@ -78,9 +88,9 @@ const Todo = () => {
 
     axios
       .post("/api/post/submit", { ...addTodo })
-      .then((응답) => {
-        console.log(응답.data);
-        if (응답.data.success) {
+      .then((res) => {
+        console.log(res.data);
+        if (res.data.success) {
           setTodoData([...todoData, addTodo]);
           setTodoValue("");
           alert("할일이 등록되었습니다");
@@ -88,8 +98,8 @@ const Todo = () => {
           alert("할일 등록 실패하였습니다");
         }
       })
-      .catch((에러) => {
-        console.log(에러);
+      .catch((err) => {
+        console.log(err);
       });
 
     // setTodoData([...todoData, addTodo]);
@@ -99,9 +109,18 @@ const Todo = () => {
   };
 
   const deleteAllClick = () => {
-    setTodoData([]);
+    if (window.confirm("정말 모두 삭제하시겠습니까?")) {
+      axios
+        .post("/api/post/deleteall")
+        .then(() => {
+          setTodoData([]);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
     // 자료를 지운다.(DB 초기화)
-    localStorage.clear();
+    // localStorage.clear();
   };
 
   return (
@@ -109,7 +128,7 @@ const Todo = () => {
       <div className="w-full p-6 m-4 bg-white rounded shadow">
         <div className="flex justify-between mb-3">
           <h1> 할일 목록</h1>
-          <button onClick={deleteAllClick}>핵폭탄</button>
+          <button onClick={deleteAllClick}>Delete All</button>
         </div>
 
         <List

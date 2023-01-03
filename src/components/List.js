@@ -1,17 +1,22 @@
-import React from 'react'
-import ListItem from './ListItem'
+import React from "react";
+import ListItem from "./ListItem";
 
-const List = React.memo (({todoData, setTodoData, deleteClick}) => {
+const List = React.memo(({ todoData, setTodoData, deleteClick }) => {
   // console.log("List Rendering");
   return (
     <>
-      {todoData.map( (item) => (
+      {todoData.map((item) => (
         <div key={item.id}>
-          <ListItem item={item} todoData={todoData} setTodoData={setTodoData} deleteClick={deleteClick}/>
+          <ListItem
+            item={item}
+            todoData={todoData}
+            setTodoData={setTodoData}
+            deleteClick={deleteClick}
+          />
         </div>
       ))}
     </>
-  )
-})
+  );
+});
 
-export default List
+export default List;
