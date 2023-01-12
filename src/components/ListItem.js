@@ -10,6 +10,7 @@ const ListItem = React.memo(({ item, todoData, setTodoData, deleteClick }) => {
   const [isEditing, setIsEditing] = useState(false);
   // 편집창 초기값은 타이틀이 먼저 있어야함
   const [editedTitle, setEditedTitle] = useState(item.title);
+
   // const deleteClick = (id) => {
   //   // 클릭된 id와 다른 요소들만 걸러서 새로운 배열 생성
   //   const nowTodo = todoData.filter((item) => item.id !== id);
@@ -90,6 +91,39 @@ const ListItem = React.memo(({ item, todoData, setTodoData, deleteClick }) => {
     // localStorage.setItem("todoData", JSON.stringify(tempTodo));
   };
 
+  // 날짜 출력
+  const WEEKDAY = ["일", "월", "화", "수", "목", "금", "토"];
+  const showTime = (_timestamp) => {
+    const date = new Date(_timestamp);
+    // 시간 오전, 오후
+    let hours = date.getHours();
+    let ampm = hours >= 12 ? "PM" : "AM";
+    hours = hours % 12;
+    hours = hours + 1 < 9 ? "0" + hours : hours;
+    let minutes = date.getMinutes();
+    minutes = minutes < 10 ? "0" + minutes : minutes;
+    let seconds = date.getSeconds();
+    seconds = seconds < 10 ? "0" + seconds : seconds;
+
+    let time = date.getFullYear();
+    time += " / ";
+    time += date.getMonth() + 1;
+    time += " / ";
+    time += date.getDate();
+    time += " / ";
+    time += WEEKDAY[date.getDay()];
+    time += " ";
+    time += hours;
+    time += ":";
+    time += minutes;
+    time += ":";
+    time += seconds;
+    time += " ";
+    time += ampm;
+
+    return time;
+  };
+
   if (isEditing) {
     return (
       <>
@@ -128,6 +162,7 @@ const ListItem = React.memo(({ item, todoData, setTodoData, deleteClick }) => {
             </span>
           </div>
           <div className="items-center">
+            <span>{showTime(item.id)}</span>
             <button
               className="px-4 py-2"
               onClick={() => {
